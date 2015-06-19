@@ -1,26 +1,58 @@
-CC=arm-openwrt-linux-uclibcgnueabi-gcc
-AR=arm-openwrt-linux-uclibcgnueabi-ar
-CFLAGS=-c -fPIC -Wall -DDEBUG \
-		-I. \
-		-I../include \
-		-I../ftdm \
-		-I../ftnm \
-		-I../build_package/libconfig-1.4.9/include 
-LDFLAGS= -L. -L../build_package/libconfig-1.4.9/lib
+include ./config.mk
 
-LIB_FTM=libftm
-LIB_FTM_INCS= ftm_types.h ftm_object.h simclist.h ftm_debug.h ftm_list.h ftm_console.h 
-LIB_FTM_SRCS= simclist.c  ftm_debug.c ftm_object.c ftm_list.c ftm_console.c ftm_mem.c ftm_value.c
-LIB_FTM_OBJS=$(LIB_FTM_SRCS:.c=.o)
+.PHONY : really clean install
 
-all: $(LIB_FTM)
+MOSQ_OBJS= 	simclist.o\
+			ftm_debug.o\
+			ftm_object.o\
+			ftm_list.o\
+			ftm_console.o\
+			ftm_mem.o\
+			ftm_value.o
 
-$(LIB_FTM): $(LIB_FTM_OBJS)
-	$(AR) rcs $(LIB_FTM).a $(LIB_FTM_OBJS)
-	$(CC) -shared -o $(LIB_FTM).so.1.0.1 $(LIB_FTM_OBJS) $(LDFLAGS)
 
-.c.o:  *.c *.h
-	$(CC) $(CFLAGS) $< -o $@
+all : libftm.so.${SOVERSION} libftm.a
 
-clean:
-	rm -f $(LIB_FTM).so.1.0.1 *.a *.o
+install : all
+	$(INSTALL) -d ${DESTDIR}$(prefix)/lib${LIB_SUFFIX}/
+	$(INSTALL) -s --strip-program=${CROSS_COMPILE}${STRIP} libftm.so.${SOVERSION} ${DESTDIR}${prefix}/lib${LIB_SUFFIX}/libftm.so.${SOVERSION}
+	ln -sf libftm.so.${SOVERSION} ${DESTDIR}${prefix}/lib${LIB_SUFFIX}/libftm.so
+	$(INSTALL) -d ${DESTDIR}${prefix}/include/
+	$(INSTALL) ftm.h ${DESTDIR}${prefix}/include/ftm.h
+
+uninstall :
+	-rm -f ${DESTDIR}${prefix}/lib${LIB_SUFFIX}/libftm.so.${SOVERSION}
+	-rm -f ${DESTDIR}${prefix}/lib${LIB_SUFFIX}/libftm.so
+	-rm -f ${DESTDIR}${prefix}/include/ftm.h
+
+reallyclean : clean
+
+clean :
+	-rm -f *.o libftm.so.${SOVERSION} libftm.so libftm.a
+
+libftm.so.${SOVERSION} : ${MOSQ_OBJS}
+	${CROSS_COMPILE}$(CC) -shared $(LIB_LDFLAGS) $^ -o $@ ${LIB_LIBS}
+
+libftm.a : ${MOSQ_OBJS}
+	${CROSS_COMPILE}$(AR) cr $@ $^
+simclist.o: simclist.c simclist.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
+ftm_debug.o : ftm_debug.c ftm_debug.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
+ftm_object.o : ftm_object.c ftm_object.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
+ftm_list.o : ftm_list.c ftm_list.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
+ftm_console.o : ftm_console.c ftm_console.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
+ftm_mem.o : ftm_mem.c ftm_mem.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
+ftm_value.o : ftm_value.c ftm_value.h
+	${CROSS_COMPILE}$(CC) $(LIB_CFLAGS) -c $< -o $@
+
