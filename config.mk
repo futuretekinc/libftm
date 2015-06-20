@@ -2,15 +2,18 @@ VERSION=0.1.0
 TIMESTAMP:=$(shell date "+%F %T%z")
 
 # Client library SO version. Bump if incompatible API/ABI changes are made.
-SOVERSION=1.0.1
+SOVERSION=0.1.0
 
 UNAME:=$(shell uname -s)
 
 CROSS_COMPILE=arm-openwrt-linux-uclibcgnueabi-
 CC=gcc
 
-CFLAGS?= -c -Wall -O2 -DDEBUG -I../build_package/libconfig-1.4.9/include 
-LDFLAGS= -L. -L../build_package/libconfig-1.4.9/lib
+CFLAGS?= -c -Wall -O2 -DDEBUG \
+	-I../build_package/libconfig-1.4.9/include \
+	-I../build_package/mosquitto/usr/local/include 
+LDFLAGS= -L. \
+	-L../build_package/libconfig-1.4.9/lib
 
 LIB_CFLAGS:=${CFLAGS} ${CPPFLAGS} 
 LIB_CXXFLAGS:=$(LIB_CFLAGS) ${CPPFLAGS}

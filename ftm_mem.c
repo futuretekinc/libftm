@@ -20,7 +20,7 @@ typedef struct
 static FTM_INT	FTM_MEM_seeker(const FTM_VOID_PTR pElement, const FTM_VOID_PTR pIndicator);
 static FTM_INT	FTM_MEM_comparator(const FTM_VOID_PTR pA, const FTM_VOID_PTR pB);
 
-static FTM_BOOL	bInitialized = FTM_BOOL_FALSE;
+static FTM_BOOL	bInitialized = FTM_FALSE;
 static list_t	xMemList;
 
 FTM_RET			FTM_MEM_init(void)
@@ -28,7 +28,7 @@ FTM_RET			FTM_MEM_init(void)
 	list_init(&xMemList);
 	list_attributes_seeker(&xMemList, FTM_MEM_seeker);
 	list_attributes_comparator(&xMemList, FTM_MEM_comparator);
-	bInitialized = FTM_BOOL_TRUE;
+	bInitialized = FTM_TRUE;
 
 	return	FTM_RET_OK;
 }
@@ -65,7 +65,7 @@ FTM_VOID_PTR	FTM_MEM_TRACE_malloc(size_t xSize, const char *pFile, unsigned long
 {
 	FTM_MEM_BLOCK_PTR	pMB;
 
-	if (bInitialized == FTM_BOOL_FALSE)
+	if (bInitialized == FTM_FALSE)
 	{
 		return	malloc(xSize);	
 	}
@@ -89,7 +89,7 @@ FTM_VOID_PTR	FTM_MEM_TRACE_calloc(size_t xNumber, size_t xSize, const char *pFil
 {
 	FTM_MEM_BLOCK_PTR	pMB;
 
-	if (bInitialized == FTM_BOOL_FALSE)
+	if (bInitialized == FTM_FALSE)
 	{
 		return	calloc(xNumber, xSize);	
 	}
@@ -114,7 +114,7 @@ FTM_VOID	FTM_MEM_TRACE_free(FTM_VOID_PTR pMem, const char *pFile, unsigned long 
 {
 	FTM_MEM_BLOCK_PTR	pMB;
 
-	if (bInitialized == FTM_BOOL_FALSE)
+	if (bInitialized == FTM_FALSE)
 	{
 		return	free(pMem);	
 	}
