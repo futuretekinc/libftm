@@ -24,7 +24,7 @@ FTM_RET	FTM_LIST_getAt(struct FTM_LIST_STRUCT * pList, FTM_ULONG ulPosition, FTM
 FTM_RET	FTM_LIST_iteratorStart(struct FTM_LIST_STRUCT * pList);
 FTM_RET	FTM_LIST_iteratorNext(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR _PTR_ ppElement);
 
-FTM_RET	FTM_LIST_count(struct FTM_LIST_STRUCT * pList, FTM_ULONG_PTR pulCount);
+FTM_ULONG	FTM_LIST_count(struct FTM_LIST_STRUCT * pList);
 
 FTM_RET FTM_LIST_setSeeker(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_seeker fSeeker);
 FTM_RET FTM_LIST_setComparator(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_comparator fComparator);

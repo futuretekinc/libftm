@@ -149,3 +149,9 @@ FTM_INT	FTM_MEM_comparator(const FTM_VOID_PTR pA, const FTM_VOID_PTR pB)
 
 	return	1;
 }
+
+
+FTM_RET		FTM_MEM_initShared(key_t xKey, FTM_ULONG ulSize)
+{
+	return	FTM_RET_OK;
+}

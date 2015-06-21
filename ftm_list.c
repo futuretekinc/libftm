@@ -162,13 +162,11 @@ FTM_RET	FTM_LIST_iteratorNext(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR _PTR_
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_count(struct FTM_LIST_STRUCT * pList, FTM_ULONG_PTR pulCount)
+FTM_ULONG FTM_LIST_count(struct FTM_LIST_STRUCT * pList)
 {
-	ASSERT((pList != NULL) && (pulCount != NULL));
+	ASSERT(pList != NULL);
 	
-	*pulCount = list_size(&pList->xList);
-
-	return	FTM_RET_OK;
+	return	list_size(&pList->xList);
 }
 
 FTM_RET FTM_LIST_setSeeker(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_seeker fSeeker)

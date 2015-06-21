@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "ftm_mqtt.h"
 #include "ftm_mem.h"
+#include "ftm_debug.h"
 
 static void *FTM_MQTT_process(void *pData);
 static void FTM_MQTT_CB_connect(struct mosquitto *pMOSQ, void *pObj, int nResult);
@@ -99,13 +100,54 @@ FTM_RET	FTM_MQTT_stop(FTM_MQTT_PTR pMQTT)
 	return	FTM_RET_OK;
 }
 
+FTM_RET FTM_MQTT_publish(FTM_MQTT_PTR pMQTT, char *pTopic, void *pPayload, int nPayload, int nQoS)
+{
+	if (mosquitto_publish(pMQTT->pMOSQ, NULL, pTopic, nPayload, pPayload, nQoS,  0) != MOSQ_ERR_SUCCESS)
+	{
+		return	FTM_RET_ERROR;	
+	}
+
+	return	FTM_RET_OK;
+}
+
+
+FTM_RET FTM_MQTT_setConnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_CONNECT pCB)
+{
+	ASSERT(pMQTT != NULL);
+
+	pMQTT->CB_connect = pCB;
+
+	return	FTM_RET_OK;
+}
+
+FTM_RET FTM_MQTT_setDisconnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_DISCONNECT pCB)
+{
+	ASSERT(pMQTT != NULL);
+
+	pMQTT->CB_disconnect = pCB;
+
+	return	FTM_RET_OK;
+}
+
+FTM_RET FTM_MQTT_setMessageCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_MESSAGE pCB)
+{
+	ASSERT(pMQTT != NULL);
+
+	pMQTT->CB_message = pCB;
+
+	return	FTM_RET_OK;
+}
+
 void *FTM_MQTT_process(void *pData)
 {
 	int	rc = 0;
 
 	FTM_MQTT_PTR	pMQTT = (FTM_MQTT_PTR)pData;
 
-	rc = mosquitto_connect(pMQTT->pMOSQ, pMQTT->xConfig.pBrokerIP, pMQTT->xConfig.usPort, pMQTT->xConfig.nKeepAlive);
+	rc = mosquitto_connect(	pMQTT->pMOSQ, 
+							pMQTT->xConfig.pBrokerIP, 
+							pMQTT->xConfig.usPort, 
+							pMQTT->xConfig.nKeepAlive);
 	
 	while(pMQTT->bRun)
 	{
@@ -126,46 +168,35 @@ void *FTM_MQTT_process(void *pData)
 
 void FTM_MQTT_CB_connect(struct mosquitto *pMOSQ, void *pObj, int nResult)
 {
-	FTM_MQTT_PTR pMQTT = (FTM_MQTT_PTR)pObj;
+	ASSERT(pObj != NULL);
 
-	printf("nResult = %d\n", nResult);
-	mosquitto_subscribe(pMOSQ, NULL, "#", 0);
-	if (pMQTT->xConfig.CB_connect != NULL)
+	if (((FTM_MQTT_PTR)pObj)->CB_connect != NULL)
 	{
-		pMQTT->xConfig.CB_connect(pMOSQ, pObj, nResult);
+		((FTM_MQTT_PTR)pObj)->CB_connect(pObj, nResult);
 	}
 }
-
-FTM_RET FTM_MQTT_publish(FTM_MQTT_PTR pMQTT, char *pTopic, void *pPayload, int nPayload, int nQoS)
-{
-	if (mosquitto_publish(pMQTT->pMOSQ, NULL, pTopic, nPayload, pPayload, nQoS,  0) != MOSQ_ERR_SUCCESS)
-	{
-		return	FTM_RET_ERROR;	
-	}
-
-	return	FTM_RET_OK;
-}
-
 
 void FTM_MQTT_CB_disconnect(struct mosquitto *pMOSQ, void *pObj, int nResult)
 {
-	FTM_MQTT_PTR pMQTT = (FTM_MQTT_PTR)pObj;
+	ASSERT(pObj != NULL);
 
-	printf("nResult = %d\n", nResult);
-	if (pMQTT->xConfig.CB_disconnect != NULL)
+	if (((FTM_MQTT_PTR)pObj)->CB_disconnect != NULL)
 	{
-		pMQTT->xConfig.CB_disconnect(pMOSQ, pObj, nResult);
+		((FTM_MQTT_PTR)pObj)->CB_disconnect(pObj, nResult);
 	}
 }
 
 void FTM_MQTT_CB_message(struct mosquitto *pMOSQ, void *pObj, const struct mosquitto_message *pMessage)
 {
-	FTM_MQTT_PTR pMQTT = (FTM_MQTT_PTR)pObj;
-	printf("  TOPIC : %s\n", pMessage->topic);
-	printf("PAYLOAD : %s\n", (char *)pMessage->payload);
-	if (pMQTT->xConfig.CB_message != NULL)
+	ASSERT(pObj != NULL);
+
+	TRACE("  TOPIC : %s\n", pMessage->topic);
+	TRACE("PAYLOAD : %s\n", (char *)pMessage->payload);
+
+	if (((FTM_MQTT_PTR)pObj)->CB_message != NULL)
 	{
-		pMQTT->xConfig.CB_message(pMOSQ, pObj, pMessage);
+		((FTM_MQTT_PTR)pObj)->CB_message(pObj, pMessage);
 	}
 
 }
+
