@@ -40,6 +40,7 @@ FTM_RET FTM_MQTT_destroy(FTM_MQTT_PTR pMQTT);
 FTM_RET	FTM_MQTT_start(FTM_MQTT_PTR pMQTT);
 FTM_RET	FTM_MQTT_stop(FTM_MQTT_PTR pMQTT);
 
+FTM_RET	FTM_MQTT_subscribe(FTM_MQTT_PTR pMQTT, const char *pSubscription, int nQoS);
 FTM_RET FTM_MQTT_publish(FTM_MQTT_PTR pMQTT, char *pTopic, void *pPayload, int nPayload, int nQoS);
 
 FTM_RET FTM_MQTT_setConnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_CONNECT pCB);

@@ -275,7 +275,7 @@ FTM_RET	FTM_DEBUG_printToFile(FTM_CHAR_PTR szMsg, FTM_CHAR_PTR pPath, FTM_CHAR_P
 	localTime = localtime(&rawTime);
 	strftime(szTime, 32, "%Y:%m:%d", localTime);
 
-	if(sprintf(szFileName, "%s%s-%s.log", pPath, pPrefix, szTime) <= 0)
+	if(sprintf(szFileName, "%s/%s-%s.log", pPath, pPrefix, szTime) <= 0)
 	{
 		return FTM_DEBUG_printToTerm(szMsg);	
 	}

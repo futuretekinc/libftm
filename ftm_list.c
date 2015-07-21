@@ -91,7 +91,7 @@ FTM_RET	FTM_LIST_get(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR pKey, FTM_VOID
 {
 	FTM_VOID_PTR	pElement;
 
-	ASSERT((pList != NULL) && (pKey != NULL) && (ppElement != NULL));
+	ASSERT((pList != NULL) && (pKey != NULL));
 
 	pElement = list_seek(&pList->xList, pKey);
 	if (pElement == NULL)
@@ -111,7 +111,7 @@ FTM_RET	FTM_LIST_getAt(struct FTM_LIST_STRUCT * pList, FTM_ULONG ulPosition, FTM
 {
 	FTM_VOID_PTR	pElement;
 
-	ASSERT((pList != NULL) && (ppElement != NULL));
+	ASSERT(pList != NULL);
 
 	pElement = list_get_at(&pList->xList, ulPosition);
 	if (pElement == NULL)
@@ -171,7 +171,8 @@ FTM_ULONG FTM_LIST_count(struct FTM_LIST_STRUCT * pList)
 
 FTM_RET FTM_LIST_setSeeker(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_seeker fSeeker)
 {
-	ASSERT((pList != NULL) && (fSeeker != NULL));
+	ASSERT(pList != NULL);
+	ASSERT(fSeeker != NULL);
 
 	list_attributes_seeker(&pList->xList, fSeeker);
 
@@ -181,7 +182,8 @@ FTM_RET FTM_LIST_setSeeker(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_seeker 
 
 FTM_RET FTM_LIST_setComparator(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_comparator fComparator)
 {
-	ASSERT((pList != NULL) && (fComparator != NULL));
+	ASSERT(pList != NULL);
+	ASSERT(fComparator != NULL);
 
 	list_attributes_comparator(&pList->xList, fComparator);
 

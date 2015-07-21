@@ -100,6 +100,16 @@ FTM_RET	FTM_MQTT_stop(FTM_MQTT_PTR pMQTT)
 	return	FTM_RET_OK;
 }
 
+FTM_RET	FTM_MQTT_subscribe(FTM_MQTT_PTR pMQTT, const char *pSubscription, int nQoS)
+{
+	if (mosquitto_subscribe(pMQTT->pMOSQ, NULL, pSubscription, nQoS) != MOSQ_ERR_SUCCESS)
+	{
+		return	FTM_RET_ERROR;	
+	}
+
+	return	FTM_RET_OK;
+}
+
 FTM_RET FTM_MQTT_publish(FTM_MQTT_PTR pMQTT, char *pTopic, void *pPayload, int nPayload, int nQoS)
 {
 	if (mosquitto_publish(pMQTT->pMOSQ, NULL, pTopic, nPayload, pPayload, nQoS,  0) != MOSQ_ERR_SUCCESS)
