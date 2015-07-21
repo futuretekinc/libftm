@@ -16,8 +16,8 @@ typedef	int				FTM_BOOL, _PTR_ FTM_BOOL_PTR;
 typedef	float			FTM_FLOAT, _PTR_ FTM_FLOAT_PTR;
 typedef	double			FTM_DOUBLE, _PTR_ FTM_DOUBLE_PTR;
 
-#define	FTM_BOOL_FALSE	0
-#define	FTM_BOOL_TRUE	(!FTM_BOOL_FALSE)
+#define	FTM_FALSE		0
+#define	FTM_TRUE		(!FTM_FALSE)
 
 typedef	unsigned long	FTM_IP_ADDR, _PTR_ FTM_IP_ADDR_PTR;
 
@@ -26,4 +26,9 @@ typedef	unsigned long	FTM_CMD, _PTR_ FTM_CMD_PTR;
 
 
 #define	FTM_FILE_NAME_LEN	256
+
+typedef	unsigned long	FTM_ID, _PTR_ FTM_ID_PTR;
+
+#define	FTM_GATEWAY_ID_LEN	32
+
 #endif

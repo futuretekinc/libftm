@@ -75,7 +75,7 @@ list_t			xCmdList;
 FTM_RET FTM_CONSOLE_run(FTM_CONSOLE_CMD_PTR pExtCmds, FTM_ULONG ulExtCmds)
 {
 	FTM_RET			nRet;
-	FTM_BOOL		bQuit = FTM_BOOL_FALSE;
+	FTM_BOOL		bQuit = FTM_FALSE;
 	FTM_CHAR		pCmdLine[2048];
 	FTM_INT			nArgc;
 	FTM_CHAR_PTR	pArgv[FTM_CONSOLE_MAX_ARGS];
@@ -110,7 +110,7 @@ FTM_RET FTM_CONSOLE_run(FTM_CONSOLE_CMD_PTR pExtCmds, FTM_ULONG ulExtCmds)
 
 				case	FTM_RET_CONSOLE_QUIT:
 					{
-						bQuit = FTM_BOOL_TRUE;
+						bQuit = FTM_TRUE;
 					}
 				}
 			}

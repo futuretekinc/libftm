@@ -1,18 +1,43 @@
 #include "ftm_error.h"
 #include "ftm_debug.h"
 #include "ftm_list.h"
+#include "ftm_mem.h"
+#include "simclist.h"
 
-FTM_RET FTM_LIST_init(FTM_LIST_PTR pList)
+typedef	struct FTM_LIST_STRUCT
+{
+	list_t		xList;	
+	FTM_BOOL	bIterator;
+}	FTM_LIST;
+
+
+FTM_LIST_PTR FTM_LIST_create(void)
+{
+	FTM_LIST_PTR	pList;
+
+	pList = FTM_MEM_malloc(sizeof(FTM_LIST));
+	if (pList == NULL)
+	{
+		return	NULL;
+	}
+
+	list_init(&pList->xList);
+	pList->bIterator = FTM_FALSE;
+	
+	return	pList;
+}
+
+FTM_RET FTM_LIST_init(struct FTM_LIST_STRUCT * pList)
 {
 	ASSERT(pList != NULL);
 
 	list_init(&pList->xList);
-	pList->bIterator = FTM_BOOL_FALSE;
+	pList->bIterator = FTM_FALSE;
 	
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_destroy(FTM_LIST_PTR pList)
+FTM_RET	FTM_LIST_destroy(struct FTM_LIST_STRUCT * pList)
 {
 	ASSERT(pList != NULL);
 
@@ -22,7 +47,7 @@ FTM_RET	FTM_LIST_destroy(FTM_LIST_PTR pList)
 }
 
 
-FTM_RET	FTM_LIST_append(FTM_LIST_PTR pList, FTM_VOID_PTR pItem)
+FTM_RET	FTM_LIST_append(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR pItem)
 {
 	FTM_INT	nRet;
 
@@ -38,7 +63,7 @@ FTM_RET	FTM_LIST_append(FTM_LIST_PTR pList, FTM_VOID_PTR pItem)
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_remove(FTM_LIST_PTR pList, FTM_VOID_PTR pItem)
+FTM_RET	FTM_LIST_remove(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR pItem)
 {
 	ASSERT((pList != NULL) && (pItem != NULL));
 
@@ -50,7 +75,7 @@ FTM_RET	FTM_LIST_remove(FTM_LIST_PTR pList, FTM_VOID_PTR pItem)
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_removeAt(FTM_LIST_PTR pList, FTM_ULONG ulPosition)
+FTM_RET	FTM_LIST_removeAt(struct FTM_LIST_STRUCT * pList, FTM_ULONG ulPosition)
 {
 	ASSERT(pList != NULL);
 
@@ -62,11 +87,11 @@ FTM_RET	FTM_LIST_removeAt(FTM_LIST_PTR pList, FTM_ULONG ulPosition)
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_get(FTM_LIST_PTR pList, FTM_VOID_PTR pKey, FTM_VOID_PTR _PTR_ ppElement)
+FTM_RET	FTM_LIST_get(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR pKey, FTM_VOID_PTR _PTR_ ppElement)
 {
 	FTM_VOID_PTR	pElement;
 
-	ASSERT((pList != NULL) && (pKey != NULL) && (ppElement != NULL));
+	ASSERT((pList != NULL) && (pKey != NULL));
 
 	pElement = list_seek(&pList->xList, pKey);
 	if (pElement == NULL)
@@ -74,16 +99,19 @@ FTM_RET	FTM_LIST_get(FTM_LIST_PTR pList, FTM_VOID_PTR pKey, FTM_VOID_PTR _PTR_ p
 		return	FTM_RET_OBJECT_NOT_FOUND;	
 	}
 
-	*ppElement = pElement;
+	if (ppElement != NULL)
+	{
+		*ppElement = pElement;
+	}
 
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_getAt(FTM_LIST_PTR pList, FTM_ULONG ulPosition, FTM_VOID_PTR _PTR_ ppElement)
+FTM_RET	FTM_LIST_getAt(struct FTM_LIST_STRUCT * pList, FTM_ULONG ulPosition, FTM_VOID_PTR _PTR_ ppElement)
 {
 	FTM_VOID_PTR	pElement;
 
-	ASSERT((pList != NULL) && (ppElement != NULL));
+	ASSERT(pList != NULL);
 
 	pElement = list_get_at(&pList->xList, ulPosition);
 	if (pElement == NULL)
@@ -91,31 +119,34 @@ FTM_RET	FTM_LIST_getAt(FTM_LIST_PTR pList, FTM_ULONG ulPosition, FTM_VOID_PTR _P
 		return	FTM_RET_OBJECT_NOT_FOUND;	
 	}
 
-	*ppElement = pElement;
+	if (ppElement != NULL)
+	{
+		*ppElement = pElement;
+	}
 
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_iteratorStart(FTM_LIST_PTR pList)
+FTM_RET	FTM_LIST_iteratorStart(struct FTM_LIST_STRUCT * pList)
 {
 	ASSERT(pList != NULL);
 
-	if (pList->bIterator == FTM_BOOL_TRUE)
+	if (pList->bIterator == FTM_TRUE)
 	{
 		list_iterator_stop(&pList->xList);
-		pList->bIterator = FTM_BOOL_FALSE;
+		pList->bIterator = FTM_FALSE;
 	}
 
 	if (list_iterator_start(&pList->xList) < 0)
 	{
 		return	FTM_RET_OBJECT_NOT_FOUND;	
 	}
-	pList->bIterator = FTM_BOOL_TRUE;
+	pList->bIterator = FTM_TRUE;
 
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_iteratorNext(FTM_LIST_PTR pList, FTM_VOID_PTR _PTR_ ppElement)
+FTM_RET	FTM_LIST_iteratorNext(struct FTM_LIST_STRUCT * pList, FTM_VOID_PTR _PTR_ ppElement)
 {
 	ASSERT((pList != NULL) && (ppElement != NULL));
 	
@@ -123,7 +154,7 @@ FTM_RET	FTM_LIST_iteratorNext(FTM_LIST_PTR pList, FTM_VOID_PTR _PTR_ ppElement)
 	if (*ppElement == NULL)
 	{
 		list_iterator_stop(&pList->xList);
-		pList->bIterator = FTM_BOOL_FALSE;
+		pList->bIterator = FTM_FALSE;
 
 		return	FTM_RET_OBJECT_NOT_FOUND;	
 	}
@@ -131,18 +162,17 @@ FTM_RET	FTM_LIST_iteratorNext(FTM_LIST_PTR pList, FTM_VOID_PTR _PTR_ ppElement)
 	return	FTM_RET_OK;
 }
 
-FTM_RET	FTM_LIST_count(FTM_LIST_PTR pList, FTM_ULONG_PTR pulCount)
+FTM_ULONG FTM_LIST_count(struct FTM_LIST_STRUCT * pList)
 {
-	ASSERT((pList != NULL) && (pulCount != NULL));
+	ASSERT(pList != NULL);
 	
-	*pulCount = list_size(&pList->xList);
-
-	return	FTM_RET_OK;
+	return	list_size(&pList->xList);
 }
 
-FTM_RET FTM_LIST_setSeeker(FTM_LIST_PTR pList, FTM_LIST_ELEM_seeker fSeeker)
+FTM_RET FTM_LIST_setSeeker(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_seeker fSeeker)
 {
-	ASSERT((pList != NULL) && (fSeeker != NULL));
+	ASSERT(pList != NULL);
+	ASSERT(fSeeker != NULL);
 
 	list_attributes_seeker(&pList->xList, fSeeker);
 
@@ -150,9 +180,10 @@ FTM_RET FTM_LIST_setSeeker(FTM_LIST_PTR pList, FTM_LIST_ELEM_seeker fSeeker)
 }
 
 
-FTM_RET FTM_LIST_setComparator(FTM_LIST_PTR pList, FTM_LIST_ELEM_comparator fComparator)
+FTM_RET FTM_LIST_setComparator(struct FTM_LIST_STRUCT * pList, FTM_LIST_ELEM_comparator fComparator)
 {
-	ASSERT((pList != NULL) && (fComparator != NULL));
+	ASSERT(pList != NULL);
+	ASSERT(fComparator != NULL);
 
 	list_attributes_comparator(&pList->xList, fComparator);
 
