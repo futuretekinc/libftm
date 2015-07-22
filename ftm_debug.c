@@ -44,7 +44,7 @@ FTM_RET	FTM_DEBUG_configLoad(FTM_DEBUG_CFG_PTR pCfg, FTM_CHAR_PTR pFileName)
 		return	FTM_RET_INVALID_ARGUMENTS;	
 	}
 
-	pSection = config_lookup(&xLibConfig, "DEBUG");
+	pSection = config_lookup(&xLibConfig, "debug");
 	if (pSection != NULL)
 	{
 		pField = config_setting_get_member(pSection, "mode");

@@ -121,29 +121,32 @@ FTM_RET FTM_MQTT_publish(FTM_MQTT_PTR pMQTT, char *pTopic, void *pPayload, int n
 }
 
 
-FTM_RET FTM_MQTT_setConnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_CONNECT pCB)
+FTM_RET FTM_MQTT_setConnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_CONNECT pCB, void *pParams)
 {
 	ASSERT(pMQTT != NULL);
 
 	pMQTT->CB_connect = pCB;
+	pMQTT->CB_connectParams = pParams;
 
 	return	FTM_RET_OK;
 }
 
-FTM_RET FTM_MQTT_setDisconnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_DISCONNECT pCB)
+FTM_RET FTM_MQTT_setDisconnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_DISCONNECT pCB, void *pParams)
 {
 	ASSERT(pMQTT != NULL);
 
 	pMQTT->CB_disconnect = pCB;
+	pMQTT->CB_disconnectParams = pParams;
 
 	return	FTM_RET_OK;
 }
 
-FTM_RET FTM_MQTT_setMessageCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_MESSAGE pCB)
+FTM_RET FTM_MQTT_setMessageCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_MESSAGE pCB, void *pParams)
 {
 	ASSERT(pMQTT != NULL);
 
 	pMQTT->CB_message = pCB;
+	pMQTT->CB_messageParams = pParams;
 
 	return	FTM_RET_OK;
 }
@@ -182,7 +185,7 @@ void FTM_MQTT_CB_connect(struct mosquitto *pMOSQ, void *pObj, int nResult)
 
 	if (((FTM_MQTT_PTR)pObj)->CB_connect != NULL)
 	{
-		((FTM_MQTT_PTR)pObj)->CB_connect(pObj, nResult);
+		((FTM_MQTT_PTR)pObj)->CB_connect(pObj, nResult, ((FTM_MQTT_PTR)pObj)->CB_connectParams);
 	}
 }
 
@@ -192,7 +195,7 @@ void FTM_MQTT_CB_disconnect(struct mosquitto *pMOSQ, void *pObj, int nResult)
 
 	if (((FTM_MQTT_PTR)pObj)->CB_disconnect != NULL)
 	{
-		((FTM_MQTT_PTR)pObj)->CB_disconnect(pObj, nResult);
+		((FTM_MQTT_PTR)pObj)->CB_disconnect(pObj, nResult, ((FTM_MQTT_PTR)pObj)->CB_disconnectParams);
 	}
 }
 
@@ -205,7 +208,7 @@ void FTM_MQTT_CB_message(struct mosquitto *pMOSQ, void *pObj, const struct mosqu
 
 	if (((FTM_MQTT_PTR)pObj)->CB_message != NULL)
 	{
-		((FTM_MQTT_PTR)pObj)->CB_message(pObj, pMessage);
+		((FTM_MQTT_PTR)pObj)->CB_message(pObj, pMessage, ((FTM_MQTT_PTR)pObj)->CB_messageParams);
 	}
 
 }

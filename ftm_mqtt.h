@@ -8,9 +8,9 @@
 #define	FTM_MQTT_CLIENT_ID_LEN	24
 #define	FTM_MQTT_BROKER_IP_LEN	256
 
-typedef	void (*FTM_MQTT_CB_CONNECT)(void *pMQTT, int nResult);
-typedef void (*FTM_MQTT_CB_DISCONNECT)(void *pMQTT, int nResult);
-typedef	void (*FTM_MQTT_CB_MESSAGE)(void *pMQTT, const struct mosquitto_message *pMessage);
+typedef	void (*FTM_MQTT_CB_CONNECT)(void *pMQTT, int nResult, void *pParams);
+typedef void (*FTM_MQTT_CB_DISCONNECT)(void *pMQTT, int nResult, void *pParams);
+typedef	void (*FTM_MQTT_CB_MESSAGE)(void *pMQTT, const struct mosquitto_message *pMessage, void *pParams);
 
 typedef	struct
 {
@@ -27,8 +27,11 @@ typedef struct
 	FTM_MQTT_CONFIG			xConfig;
 
 	FTM_MQTT_CB_CONNECT		CB_connect;
+	void*					CB_connectParams;
 	FTM_MQTT_CB_DISCONNECT	CB_disconnect;
+	void*					CB_disconnectParams;
 	FTM_MQTT_CB_MESSAGE		CB_message;
+	void*					CB_messageParams;
 	int						bRun;
 	struct mosquitto*		pMOSQ;
 	pthread_t				hThread;
@@ -43,9 +46,9 @@ FTM_RET	FTM_MQTT_stop(FTM_MQTT_PTR pMQTT);
 FTM_RET	FTM_MQTT_subscribe(FTM_MQTT_PTR pMQTT, const char *pSubscription, int nQoS);
 FTM_RET FTM_MQTT_publish(FTM_MQTT_PTR pMQTT, char *pTopic, void *pPayload, int nPayload, int nQoS);
 
-FTM_RET FTM_MQTT_setConnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_CONNECT pCB);
-FTM_RET FTM_MQTT_setDisconnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_DISCONNECT pCB);
-FTM_RET FTM_MQTT_setMessageCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_MESSAGE pCB);
+FTM_RET FTM_MQTT_setConnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_CONNECT pCB, void *pParams);
+FTM_RET FTM_MQTT_setDisconnectCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_DISCONNECT pCB, void *pParams);
+FTM_RET FTM_MQTT_setMessageCB(FTM_MQTT_PTR pMQTT, FTM_MQTT_CB_MESSAGE pCB, void *pParams);
 
 #endif
 

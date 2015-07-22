@@ -6,7 +6,7 @@ SOVERSION=0.1.0
 
 UNAME:=$(shell uname -s)
 
-CROSS_COMPILE=arm-openwrt-linux-uclibcgnueabi-
+CROSS_COMPILE?=
 CC=gcc
 
 CFLAGS?= -c -Wall -O2 -DDEBUG \
@@ -35,6 +35,6 @@ ifeq ($(WITH_DOCS),yes)
 endif
 
 INSTALL?=install
-prefix=/home/xtra/work/cortina/build_package/libftm
+prefix=$(CURDIR)/../build_package/libftm
 STRIP?=strip
 
